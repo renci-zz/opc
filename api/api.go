@@ -18,8 +18,8 @@ type App struct {
 	Config Config
 }
 
-//Config determines what services shall be exposed
-//through the App
+// Config determines what services shall be exposed
+// through the App
 type Config struct {
 	WriteTag  bool `toml:"allow_write"`
 	AddTag    bool `toml:"allow_add"`
@@ -30,11 +30,14 @@ type Config struct {
 func (a *App) Initialize(conn opc.Connection) {
 	a.Conn = conn
 	a.Router = mux.NewRouter()
-	a.Router.HandleFunc("/tags", a.getTags).Methods("GET")          // Read
-	a.Router.HandleFunc("/tag", a.createTag).Methods("POST")        // Add(...)
-	a.Router.HandleFunc("/tag/{id}", a.getTag).Methods("GET")       // ReadItem(id)
-	a.Router.HandleFunc("/tag/{id}", a.deleteTag).Methods("DELETE") // Remove(id)
-	a.Router.HandleFunc("/tag/{id}", a.updateTag).Methods("PUT")    // Write(id, value)
+	a.Router.HandleFunc("/tags", a.getTags).Methods("GET")                           // Read
+	a.Router.HandleFunc("/tag", a.createTag).Methods("POST")                         // Add(...)
+	a.Router.HandleFunc("/tag", a.getTag).Methods("GET").Queries("id", "{id}")       // ReadItem(id)
+	a.Router.HandleFunc("/tag", a.deleteTag).Methods("DELETE").Queries("id", "{id}") // Remove(id)
+	a.Router.HandleFunc("/tag", a.updateTag).Methods("PUT").Queries("id", "{id}")    // Write(id, value)
+	// a.Router.HandleFunc("/tag/{id}", a.getTag).Methods("GET")                        // ReadItem(id)
+	// a.Router.HandleFunc("/tag/{id}", a.deleteTag).Methods("DELETE")                  // Remove(id)
+	// a.Router.HandleFunc("/tag/{id}", a.updateTag).Methods("PUT")                     // Write(id, value)
 }
 
 // Run starts serving the API
